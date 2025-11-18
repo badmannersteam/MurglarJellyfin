@@ -6,10 +6,4 @@ import com.badmanners.murglar.lib.core.localization.Messages
 interface JellyfinMessages : Messages {
     val serverUrlSummary: String
     val serverUrlTitle: String
-    val loginHelpText: String
-    val oauthToken: String
-    val twoFAText: String
-    val illegalOauthTokenFormat: String
-    val illegalCookieFormat: String
-    val radio: String
 }

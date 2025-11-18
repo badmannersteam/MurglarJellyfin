@@ -11,7 +11,7 @@ import java.util.UUID
 
 class ItemsApi(var api: JellyfinApi) {
     val page_size = 50
-    fun getItems(
+    suspend fun getItems(
         userId: String? = api.userId,
         includeItemTypes: List<BaseItemKind> = emptyList(),
         recursive: Boolean? = null,

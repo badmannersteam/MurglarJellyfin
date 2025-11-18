@@ -7,6 +7,7 @@ import com.badmanners.murglar.lib.core.model.node.NodeParameters.PagingType.NON_
 import com.badmanners.murglar.lib.core.model.node.NodeParameters.PagingType.PAGEABLE
 import com.badmanners.murglar.lib.core.model.node.NodeType.ALBUM
 import com.badmanners.murglar.lib.core.model.node.NodeType.ARTIST
+import com.badmanners.murglar.lib.core.model.node.NodeType.NODE
 import com.badmanners.murglar.lib.core.model.node.NodeType.TRACK
 import com.badmanners.murglar.lib.core.model.node.Path
 import com.badmanners.murglar.lib.core.node.BaseNodeResolver
@@ -33,6 +34,7 @@ class JellyfinNodeResolver(
             paging = PAGEABLE,
             hasSubdirectories = false,
             isOwn = true,
+            contentNodeType = TRACK,
             nodeContentSupplier = ::getMyTracks
         ),
         Root(
@@ -41,6 +43,7 @@ class JellyfinNodeResolver(
             paging = NON_PAGEABLE,
             hasSubdirectories = true,
             isOwn = true,
+            contentNodeType = ALBUM,
             nodeContentSupplier = ::getMyAlbums
         ),
         Root(
@@ -49,6 +52,7 @@ class JellyfinNodeResolver(
             paging = NON_PAGEABLE,
             hasSubdirectories = true,
             isOwn = true,
+            contentNodeType = ARTIST,
             nodeContentSupplier = ::getMyArtists
         ),
 
@@ -56,21 +60,21 @@ class JellyfinNodeResolver(
             pattern = "searchTracks",
             name = messages::tracksSearch,
             hasSubdirectories = false,
-            contentType = TRACK,
+            contentNodeType = TRACK,
             nodeContentSupplier = ::searchTracks
         ),
         Search(
             pattern = "searchAlbums",
             name = messages::albumsSearch,
             hasSubdirectories = true,
-            contentType = ALBUM,
+            contentNodeType = ALBUM,
             nodeContentSupplier = ::searchAlbums
         ),
         Search(
             pattern = "searchArtists",
             name = messages::artistsSearch,
             hasSubdirectories = true,
-            contentType = ARTIST,
+            contentNodeType = ARTIST,
             nodeContentSupplier = ::searchArtists
         ),
         Track(
@@ -88,6 +92,7 @@ class JellyfinNodeResolver(
             paging = NON_PAGEABLE,
             hasSubdirectories = false,
             type = ALBUM,
+            contentNodeType = TRACK,
             relatedPaths = ::getAlbumRelatedPaths,
             like = LikeConfig(rootNodePath("myAlbums"), ::likeAlbum),
             nodeSupplier = ::getAlbum,
@@ -98,6 +103,7 @@ class JellyfinNodeResolver(
             pattern = "*/artist-<artistId>/albums",
             paging = NON_PAGEABLE,
             hasSubdirectories = true,
+            contentNodeType = ALBUM,
             nodeContentSupplier = ::getArtistAlbums
         ),
         MappedEntity(
@@ -105,6 +111,7 @@ class JellyfinNodeResolver(
             paging = NON_PAGEABLE,
             hasSubdirectories = true,
             type = ARTIST,
+            contentNodeType = NODE,
             relatedPaths = ::getArtistRelatedPaths,
             like = LikeConfig(rootNodePath("myArtists"), ::likeArtist),
             nodeSupplier = ::getArtist,
@@ -114,48 +121,48 @@ class JellyfinNodeResolver(
 
 
     @Suppress("UNCHECKED_CAST")
-    override fun getTracksByMediaIds(mediaIds: List<String>): List<JellyfinTrack> =
+    override suspend fun getTracksByMediaIds(mediaIds: List<String>): List<JellyfinTrack> =
         murglar.getTracksByMediaIds(mediaIds).convertTracks(unmappedPath()) as List<JellyfinTrack>
 
-    private fun getMyTracks(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun getMyTracks(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.getMyTracks(page).convertTracks(parentPath)
 
-    private fun getMyAlbums(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun getMyAlbums(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.getMyAlbums().convertAlbums(parentPath)
 
-    private fun getMyArtists(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun getMyArtists(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.getMyArtists().convertArtists(parentPath)
 
-    private fun searchTracks(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun searchTracks(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.searchTracks(params.getQuery(), page!!).convertTracks(parentPath)
 
-    private fun searchAlbums(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun searchAlbums(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.searchAlbums(params.getQuery(), page!!).convertAlbums(parentPath)
 
-    private fun searchArtists(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun searchArtists(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.searchArtists(params.getQuery(), page!!).convertArtists(parentPath)
 
-    private fun getAlbumTracks(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun getAlbumTracks(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.getAlbumTracks(params["albumId"]!!).convertTracks(parentPath)
 
-    private fun getArtistAlbums(parentPath: Path, page: Int?, params: Map<String, String>) =
+    private suspend fun getArtistAlbums(parentPath: Path, page: Int?, params: Map<String, String>) =
         murglar.getArtistAlbums(params["artistId"]!!).convertAlbums(parentPath)
 
     private fun getArtistSubdirectories(parentPath: Path, page: Int?, params: Map<String, String>) = listOf(
         subdirectoryNode("albums", messages.albums, parentPath),
     )
 
-    private fun getArtist(parentPath: Path, params: Map<String, String>) =
+    private suspend fun getArtist(parentPath: Path, params: Map<String, String>) =
         murglar.getArtist(params["artistId"]!!).convertArtist(parentPath)
 
     private fun getArtistSimilarArtistsSubdirectory(parentPath: Path, params: Map<String, String>) = subdirectoryNode(
         "similarArtists", messages.similarArtists, parentPath.child("artist-${params["artistId"]}")
     )
 
-    private fun getAlbum(parentPath: Path, params: Map<String, String>) =
+    private suspend fun getAlbum(parentPath: Path, params: Map<String, String>) =
         murglar.getAlbum(params["albumId"]!!).convertAlbum(parentPath)
 
-    private fun getTrack(parentPath: Path, params: Map<String, String>) =
+    private suspend fun getTrack(parentPath: Path, params: Map<String, String>) =
         murglar.getTrack(params["trackId"]!!, params["albumId"]).convertTrack(parentPath)
 
     private fun likeTrack(node: Node, like: Boolean) {

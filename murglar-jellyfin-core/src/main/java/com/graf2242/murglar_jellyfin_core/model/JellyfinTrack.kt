@@ -32,7 +32,7 @@ class JellyfinTrack(
     genre: String?,
     explicit: Boolean,
     gain: String?,
-    peak: String?,
+    peak: Double?,
     sources: List<Source>,
     override val nodeType: String,
     mediaId: String,
@@ -62,7 +62,7 @@ class JellyfinTrack(
     serviceUrl = serviceUrl
 )
 
-fun trackFromItemResult(result: BaseItemDtoQueryResult, jellyfinApi: JellyfinApi): List<JellyfinTrack> {
+suspend fun trackFromItemResult(result: BaseItemDtoQueryResult, jellyfinApi: JellyfinApi): List<JellyfinTrack> {
     if (result.items == null)
         return emptyList();
 

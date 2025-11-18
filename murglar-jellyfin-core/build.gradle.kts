@@ -5,8 +5,8 @@ plugins {
 murglarPlugin {
     id = "jellyfin"
     name = "Jellyfin"
-    version = catalog.versions.murglar.jellyfin
-    murglarClass = "com.graf2242.murglar_jellyfin_core.JellyfinMurglar"
+    version = catalog.versions.murglar.jellyfin.map(String::toInt)
+    entryPointClass = "com.graf2242.murglar_jellyfin_core.JellyfinMurglar"
 }
 
 dependencies {

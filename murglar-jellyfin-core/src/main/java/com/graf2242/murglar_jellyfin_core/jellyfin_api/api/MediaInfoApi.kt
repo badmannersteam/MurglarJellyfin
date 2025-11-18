@@ -9,7 +9,7 @@ import org.jellyfin.sdk.model.UUID
 import org.jellyfin.sdk.model.api.PlaybackInfoResponse
 
 class MediaInfoApi(val api: JellyfinApi) {
-    fun getPlaybackInfo(id: UUID): PlaybackInfoResponse {
+    suspend fun getPlaybackInfo(id: UUID): PlaybackInfoResponse {
         val request = NetworkRequest.Builder("${api.serverUrl}/Items/${id}/PlaybackInfo", "GET")
             .addHeader("Authorization", api.getAuthHeader())
             .addParameter("userId", api.userId.toString())

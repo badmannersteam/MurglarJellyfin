@@ -1,6 +1,7 @@
 package com.graf2242.murglar_jellyfin_core.login
 
 import com.badmanners.murglar.lib.core.localization.MessageException
+import com.badmanners.murglar.lib.core.localization.Messages.Companion.loginWith
 import com.badmanners.murglar.lib.core.login.CredentialLoginStep
 import com.badmanners.murglar.lib.core.login.CredentialsLoginVariant
 import com.badmanners.murglar.lib.core.login.CredentialsLoginVariant.Credential
@@ -56,7 +57,7 @@ class JellyfinLoginResolver(
     override val credentialsLoginVariants = listOf(
         CredentialsLoginVariant(
             id = USERNAME_LOGIN_VARIANT,
-            label = { messages.loginWith(email = true) },
+            label = { messages.loginWith(username = true) },
             credentials = listOf(
                 Credential(USERNAME_CREDENTIAL, messages::username),
                 Credential(PASSWORD_CREDENTIAL, messages::password)
@@ -84,7 +85,7 @@ class JellyfinLoginResolver(
         get() = emptyList()
 
 
-    override fun credentialsLogin(
+    override suspend fun credentialsLogin(
         loginVariantId: String,
         args: Map<String, String>
     ): CredentialLoginStep {
@@ -140,7 +141,7 @@ class JellyfinLoginResolver(
         preferences.remove(USERNAME_PREFERENCE)
     }
 
-    override fun webLogin(loginVariantId: String, webViewProvider: WebViewProvider): Boolean {
+    override suspend fun webLogin(loginVariantId: String, webViewProvider: WebViewProvider): Boolean {
         throw UnsupportedOperationException()
     }
 

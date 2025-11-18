@@ -20,7 +20,7 @@ class JellyfinApi(val murglar: JellyfinMurglar, val network: NetworkMiddleware, 
     var token: String? = ""
     var authType: String? = ""
     var client: String? = "Murglar"
-    var version: String? = "2"
+    var version: String? = "3"
     var deviceId: String? = "deadbeef"
     var deviceName: String? = "Murglar"
 

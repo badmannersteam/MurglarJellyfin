@@ -6,7 +6,7 @@ murglarAndroidPlugin {
     id = "jellyfin"
     name = "Jellyfin"
     version = catalog.versions.murglar.jellyfin.map(String::toInt)
-    murglarClass = "com.graf2242.murglar_jellyfin_core.JellyfinMurglar"
+    entryPointClass = "com.graf2242.murglar_jellyfin_core.JellyfinMurglar"
 }
 
 dependencies {

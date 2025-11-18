@@ -22,8 +22,8 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         create("catalog") {
-            version("murglar-plugins", "4.4")
-            version("murglar-jellyfin", "2")    // use just a single number
+            version("murglar-plugins", "7.0")
+            version("murglar-jellyfin", "3")    // use just a single number
 
             // for core module
             plugin("murglar-plugin-core", "murglar-gradle-plugin-core").versionRef("murglar-plugins")

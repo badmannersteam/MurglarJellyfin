@@ -10,7 +10,7 @@ import org.jellyfin.sdk.model.api.AuthenticateUserByName
 class UserApi(val api: JellyfinApi) {
     data class AuthResult(val userId: String?, val token: String?, val userName: String?)
 
-    fun authenticateUserByName(data: AuthenticateUserByName): AuthResult {
+    suspend fun authenticateUserByName(data: AuthenticateUserByName): AuthResult {
         val request = NetworkRequest.Builder("${api.serverUrl}/Users/AuthenticateByName", "POST")
             .addHeader("Authorization", api.getAuthHeader())
             .body("""{ "username": "${data.username}", "pw": "${data.pw}" }""")
@@ -24,7 +24,7 @@ class UserApi(val api: JellyfinApi) {
         )
     }
 
-    fun checkToken(): Boolean {
+    suspend fun checkToken(): Boolean {
         val request = NetworkRequest.Builder("${api.serverUrl}/Users", "GET")
             .addHeader("Authorization", api.getAuthHeader())
             .build()

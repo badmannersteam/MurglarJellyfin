@@ -11,7 +11,6 @@ import com.badmanners.murglar.lib.core.preference.EditPreference
 import com.badmanners.murglar.lib.core.preference.Preference
 import com.badmanners.murglar.lib.core.preference.PreferenceMiddleware
 import com.badmanners.murglar.lib.core.service.BaseMurglar
-import com.badmanners.murglar.lib.core.utils.contract.WorkerThread
 import com.graf2242.murglar_jellyfin_core.jellyfin_api.JellyfinApi
 import com.graf2242.murglar_jellyfin_core.localization.JellyfinDefaultMessages
 import com.graf2242.murglar_jellyfin_core.localization.JellyfinMessages
@@ -35,16 +34,13 @@ class JellyfinMurglar(
     notifications: NotificationMiddleware,
     logger: LoggerMiddleware
 ) : BaseMurglar<JellyfinTrack, JellyfinMessages>(
-    id, ICON_URL, MESSAGES, preferences, network, notifications, logger
+    id, MESSAGES, preferences, network, notifications, logger
 ) {
     companion object {
         /**
          * Must be used only for [MediaId.build], don't pass it to the [BaseMurglar] constructor directly!
          */
         const val SERVICE_ID = "Jellyfin"
-
-        private const val ICON_URL =
-            "https://play-lh.googleusercontent.com/aFWiT2lTa9CYBpyPjfgfNHd0r5puwKRGj2rHpdPTNrz2N9LXgN_MbLjePd1OTc0E8Rl1"
 
         private val MESSAGES = mapOf(
             ENGLISH to JellyfinDefaultMessages,
@@ -62,8 +58,7 @@ class JellyfinMurglar(
 //    }.createApi(baseUrl = serverUrl)
     val jellyfinApi = JellyfinApi(this, network, logger)
 
-    @WorkerThread
-    override fun onCreate() {
+    override suspend fun onCreate() {
         if (!loginResolver.isLogged)
             return
 
@@ -94,18 +89,17 @@ class JellyfinMurglar(
         Extension.UNKNOWN to Bitrate.B_UNKNOWN
     )
 
-    override fun getTracksByMediaIds(mediaIds: List<String>): List<JellyfinTrack> {
+    override suspend fun getTracksByMediaIds(mediaIds: List<String>): List<JellyfinTrack> {
         return emptyList()
     }
 
-    override fun resolveSourceForUrl(track: JellyfinTrack, source: Source): Source {
+    override suspend fun resolveSourceForUrl(track: JellyfinTrack, source: Source): Source {
         logger.w("Jellyfin", "resolveSourceForUrl")
         logger.w("Jellyfin", track.sources.toString())
         return source
     }
 
-    @WorkerThread
-    fun getMyAlbums(): List<JellyfinAlbum> {
+    suspend fun getMyAlbums(): List<JellyfinAlbum> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ALBUM),
@@ -115,7 +109,7 @@ class JellyfinMurglar(
         return albumFromItemResult(result, jellyfinApi);
     }
 
-    fun getMyArtists(): List<JellyfinArtist> {
+    suspend fun getMyArtists(): List<JellyfinArtist> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ARTIST),
@@ -124,7 +118,7 @@ class JellyfinMurglar(
         return artistFromItemResult(result, jellyfinApi);
     }
 
-    fun getMyTracks(page: Int?): List<JellyfinTrack> {
+    suspend fun getMyTracks(page: Int?): List<JellyfinTrack> {
         val result = jellyfinApi.itemsApi.getItems(
             page = page,
             userId = jellyfinApi.userId,
@@ -134,7 +128,7 @@ class JellyfinMurglar(
         return trackFromItemResult(result, jellyfinApi);
     }
 
-    fun searchTracks(query: String, page: Int): List<JellyfinTrack> {
+    suspend fun searchTracks(query: String, page: Int): List<JellyfinTrack> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.AUDIO),
@@ -145,7 +139,7 @@ class JellyfinMurglar(
         return trackFromItemResult(result, jellyfinApi);
     }
 
-    fun searchAlbums(query: String, page: Int): List<JellyfinAlbum> {
+    suspend fun searchAlbums(query: String, page: Int): List<JellyfinAlbum> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ALBUM),
@@ -157,7 +151,7 @@ class JellyfinMurglar(
         return albumFromItemResult(result, jellyfinApi);
     }
 
-    fun searchArtists(query: String, page: Int): List<JellyfinArtist> {
+    suspend fun searchArtists(query: String, page: Int): List<JellyfinArtist> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ARTIST),
@@ -168,7 +162,7 @@ class JellyfinMurglar(
         return artistFromItemResult(result, jellyfinApi);
     }
 
-    fun getAlbumTracks(albumId: String): List<JellyfinTrack> {
+    suspend fun getAlbumTracks(albumId: String): List<JellyfinTrack> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.AUDIO),
@@ -178,7 +172,7 @@ class JellyfinMurglar(
         return trackFromItemResult(result, jellyfinApi);
     }
 
-    fun getArtistAlbums(artistId: String): List<JellyfinAlbum> {
+    suspend fun getArtistAlbums(artistId: String): List<JellyfinAlbum> {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ALBUM),
@@ -190,7 +184,7 @@ class JellyfinMurglar(
         return albumFromItemResult(result, jellyfinApi);
     }
 
-    fun getArtist(artistId: String): JellyfinArtist {
+    suspend fun getArtist(artistId: String): JellyfinArtist {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ARTIST),
@@ -202,7 +196,7 @@ class JellyfinMurglar(
         return artistFromItemResult(result, jellyfinApi)[0];
     }
 
-    fun getAlbum(albumId: String): JellyfinAlbum {
+    suspend fun getAlbum(albumId: String): JellyfinAlbum {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.MUSIC_ALBUM),
@@ -214,7 +208,7 @@ class JellyfinMurglar(
         return albumFromItemResult(result, jellyfinApi)[0];
     }
 
-    fun getTrack(trackId: String, albumId: String?): JellyfinTrack {
+    suspend fun getTrack(trackId: String, albumId: String?): JellyfinTrack {
         val result = jellyfinApi.itemsApi.getItems(
             userId = jellyfinApi.userId,
             includeItemTypes = listOf(BaseItemKind.AUDIO),
