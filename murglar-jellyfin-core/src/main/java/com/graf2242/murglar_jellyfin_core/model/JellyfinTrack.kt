@@ -3,6 +3,7 @@ package com.graf2242.murglar_jellyfin_core.model
 import com.badmanners.murglar.lib.core.model.node.NodeType.TRACK
 import com.badmanners.murglar.lib.core.model.track.BaseTrack
 import com.badmanners.murglar.lib.core.model.track.source.Container
+import com.badmanners.murglar.lib.core.model.track.source.QualityTier
 import com.badmanners.murglar.lib.core.model.track.source.Source
 import com.badmanners.murglar.lib.core.utils.contract.Model
 import com.graf2242.murglar_jellyfin_core.converters.bitrateConverter
@@ -97,7 +98,8 @@ suspend fun trackFromItemResult(result: BaseItemDtoQueryResult, jellyfinApi: Jel
                     extension = extensionConverter(iter.codec ?: ""),
                     tag = iter.displayTitle!!,
                     bitrate = bitrateConverter(iter.bitRate!!),
-                    size = itr.size!!
+                    size = itr.size!!,
+                    qualityTier = QualityTier.HIGH_QUALITY
                 )
             }
         }

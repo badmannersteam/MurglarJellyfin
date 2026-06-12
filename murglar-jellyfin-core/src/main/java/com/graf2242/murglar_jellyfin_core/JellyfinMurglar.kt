@@ -4,7 +4,10 @@ import com.badmanners.murglar.lib.core.localization.RussianMessages.Companion.RU
 import com.badmanners.murglar.lib.core.log.LoggerMiddleware
 import com.badmanners.murglar.lib.core.model.track.source.Bitrate
 import com.badmanners.murglar.lib.core.model.track.source.Extension
+import com.badmanners.murglar.lib.core.model.track.source.QualityTier
 import com.badmanners.murglar.lib.core.model.track.source.Source
+import com.badmanners.murglar.lib.core.model.track.source.SourceFormat
+import com.badmanners.murglar.lib.core.model.track.source.SourceFormat.SourceFormatAvailability
 import com.badmanners.murglar.lib.core.network.NetworkMiddleware
 import com.badmanners.murglar.lib.core.notification.NotificationMiddleware
 import com.badmanners.murglar.lib.core.preference.EditPreference
@@ -86,7 +89,7 @@ class JellyfinMurglar(
     override val nodeResolver = JellyfinNodeResolver(this, messages)
 
     override val possibleFormats = listOf(
-        Extension.UNKNOWN to Bitrate.B_UNKNOWN
+        SourceFormat(Extension.UNKNOWN, Bitrate.B_UNKNOWN, QualityTier.HIGH_QUALITY, SourceFormatAvailability.AVAILABLE)
     )
 
     override suspend fun getTracksByMediaIds(mediaIds: List<String>): List<JellyfinTrack> {
